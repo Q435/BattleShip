@@ -4,13 +4,27 @@
     <meta charset="UTF-8">
     <title>BattleShip - TIEI 2020</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="css/common.css" >
-    <script src="js/simpleajax.js"></script>
-    <script src="js/battleship.js"></script>
+
+    <?php
+    foreach ($css_files as $file) {
+        ?>
+        <link rel="stylesheet" type="text/css" href="css/<?= $file ?>.css">
+        <?php
+    }
+    ?>
+
+    <?php
+        foreach ($js_files as $file) {
+    ?>
+        <script src="js/<?= $file ?>.js"></script>
+    <?php
+        }
+    ?>
+
 </head>
 <body>
 <div class="header">
-    <p class="top_left"><a href="index.php">BattleShip TIEI-2020</a></p>
+    <span class="top_left"><a href="index.php">BattleShip TIEI-2020</a></span>
     <span class="top_right">
     <?php
         if (isset( $_SESSION["user_id"])) {

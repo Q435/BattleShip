@@ -1,23 +1,25 @@
 <?php
-session_start();
-include("include/util.inc.php");
+    session_start();
+    $js_files = array("simpleajax");
+    $css_files = array("common");
+    include("include/util.inc.php");
 
-if (isset($_GET["error_code"])) {
-    $msg = errorMsg($_GET["error_code"]);
-}
+    if (isset($_GET["error_code"])) {
+        $msg = errorMsg($_GET["error_code"]);
+    }
 
-include("include/opening.inc.php");
+    include("include/opening.inc.php");
 
 ?>
 
 <form id="form" method="post" action="register.php">
-<h1>Register</h1>
+    <h1>Register</h1>
 
-<?php
-    if ((isset($msg))) {
-        echo "<p class='error_msg'>$msg</p>";
-    }
-?>
+    <?php
+        if ((isset($msg))) {
+            echo "<p class='error_msg'>$msg</p>";
+        }
+    ?>
 
     <div class="field">
         <label for="username">Username:</label>
@@ -37,6 +39,7 @@ include("include/opening.inc.php");
     <input type="submit" name="submit" id="submit" class="button" value="Submit"\>
 
 </form>
+
 <?php
 include("include/closing.html");
 ?>

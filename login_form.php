@@ -1,12 +1,13 @@
 <?php
-session_start();
-include("include/util.inc.php");
+    session_start();
+    $js_files = array("simpleajax");
+    $css_files = array("common");
+    include("include/util.inc.php");
+    include("include/opening.inc.php");
 
-if (isset($_GET["error_code"])) {
-    $msg = errorMsg($_GET["error_code"]);
-}
-
-include("include/opening.inc.php");
+    if (isset($_GET["error_code"])) {
+        $msg = errorMsg($_GET["error_code"]);
+    }
 
 ?>
 
@@ -32,6 +33,7 @@ include("include/opening.inc.php");
     <input type="submit" name="login" id="login" class="button" value="Login" />
 
 </form>
+
 <?php
 include("include/closing.html");
 ?>

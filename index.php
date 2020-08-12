@@ -1,5 +1,7 @@
 <?php
     session_start();
+    $js_files = array("simpleajax");
+    $css_files = array("common");
     include("include/util.inc.php");
     include("include/opening.inc.php");
 ?>

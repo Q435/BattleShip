@@ -1,5 +1,6 @@
 <?php
     session_start();
+
     include("include/util.inc.php");
 
     if (isset($_SESSION["user_id"])) {
