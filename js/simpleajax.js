@@ -9,14 +9,15 @@
 // * method: 'get' or 'post'
 // * parameters: the parameters of the PHP script in the form of a
 //   JavaScript object (like "{name: 'Marc', nationality: 'French'}")
+// * mode: 'key' or 'json'
 // * onSuccess: the function to call after the request succeeded
 // * onFailure: the function to call after the request failed
-// 
+//
 // Notice that the two callbacks 'onSuccess' and 'onFailure' can
 // be omitted
 //
 function ajaxRequest(url,method,parameters,onSuccess,onFailure) {
-	
+
 	function getMethod(method) {
 		if ( typeof method != "string" )
 			throw method + ": bad method (choose 'GET' or 'POST')";
@@ -43,7 +44,7 @@ function ajaxRequest(url,method,parameters,onSuccess,onFailure) {
 			return params;
 		}
 	}
-	
+
 	method = getMethod(method);
 
 	let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");

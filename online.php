@@ -17,7 +17,7 @@
                 </p>
             </div>
             <section id="boards_container">
-                <div id="my_board_container">
+                <div id="my_board">
                     <div class="game_header">
                         <h2>
                             Your ships
@@ -372,7 +372,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="opponent_board_container">
+                <div id="opponent_board">
                     <div class="game_header">
                         <h2>
                             Opponent ships

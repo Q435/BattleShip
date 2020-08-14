@@ -3,6 +3,7 @@
 include("pdo.inc.php");
 
 $USER_TABLE = 'users';
+$BOARD_TABLE = "boards";
 $PDO = getPDO();
 
 function register($username, $nickname, $password) {

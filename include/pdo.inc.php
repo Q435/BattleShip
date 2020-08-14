@@ -2,7 +2,7 @@
 
     function getPDO() {
         $host = '127.0.0.1:3306';
-        $db   = 'battleship';
+        $db   = 'seabattle_db';
         $user = 'root';
         $pass = 'root';
         $charset = 'utf8';
