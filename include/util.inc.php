@@ -4,25 +4,26 @@ include("pdo.inc.php");
 
 $USER_TABLE = 'users';
 $BOARD_TABLE = "boards";
+$GAME_TABLE = "games_active";
 $PDO = getPDO();
 
 function register($username, $nickname, $password) {
     global $PDO, $USER_TABLE;
     $password = password_hash($password, PASSWORD_BCRYPT);
-    $sth = $PDO->query("INSERT INTO $USER_TABLE (username, nickname, password) VALUES ('$username', '$nickname', '$password')");
-    return $sth->rowCount() > 0;
+    $sql = $PDO->query("INSERT INTO $USER_TABLE (username, nickname, password) VALUES ('$username', '$nickname', '$password')");
+    return $sql->rowCount() > 0;
 }
 
 function checkUsername($username) {
     global $PDO, $USER_TABLE;
-    $sth = $PDO->query("SELECT COUNT(*) FROM $USER_TABLE WHERE username = '$username'");
-    return $sth->fetchColumn() > 0;
+    $sql = $PDO->query("SELECT COUNT(*) FROM $USER_TABLE WHERE username = '$username'");
+    return $sql->fetchColumn() > 0;
 }
 
 function checkNickname($nickname) {
     global $PDO, $USER_TABLE;
-    $sth = $PDO->query("SELECT COUNT(*) FROM $USER_TABLE WHERE nickname = '$nickname'");
-    return $sth->fetchColumn() > 0;
+    $sql = $PDO->query("SELECT COUNT(*) FROM $USER_TABLE WHERE nickname = '$nickname'");
+    return $sql->fetchColumn() > 0;
 }
 
 function checkPassword($username, $password) {
@@ -32,6 +33,27 @@ function checkPassword($username, $password) {
     if ( $result && password_verify($password, $result['password']) )
         return $result;
     return false;
+}
+
+function checkLogin() {
+    if (!isset($_SESSION['user_id'])) {
+        if (!isset($_GET['user_id'])) {
+            header("Location:login_form.php");
+            die();
+        }
+    }
+}
+
+function checkGame() {
+    global $PDO, $GAME_TABLE;
+
+    $result = $PDO->query("SELECT * FROM $GAME_TABLE WHERE player1_id = {$_SESSION['user_id']} OR player2_id = {$_SESSION['user_id']}")->fetch();
+    if ($result) {
+        $_SESSION['game_id'] = $result['Id'];
+        header("Location:online.php");
+        die();
+    }
+
 }
 
 function getUserId($user) {
@@ -74,4 +96,31 @@ function errorMsg($error_code) {
             break;
     }
     return $msg;
+}
+
+function sqlExecute($sql) {
+    global $PDO;
+
+    try {
+        $result = $PDO->query($sql)->fetch();
+    } catch (PDOException $e) {
+        echo $e->getMessage() . "   " . $sql;
+        die();
+    }
+
+    return $result;
+}
+
+function sqlFindAllFreeGame($user_id) {
+    global $PDO, $GAME_TABLE;
+    $sql = "SELECT Id, player1_name FROM $GAME_TABLE WHERE player_num = 1";
+
+    try {
+        $result = $PDO->query($sql)->fetchAll();
+    } catch (PDOException $e) {
+        echo $e->getMessage() . "   " . $sql;
+        die();
+    }
+
+    return $result;
 }

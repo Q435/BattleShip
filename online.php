@@ -4,6 +4,13 @@
     $css_files = array("online");
     include("include/util.inc.php");
     include("include/opening.inc.php");
+
+    checkLogin();
+
+    if (!isset($_SESSION['game_id'])) {
+        checkGame();
+    }
+
 ?>
 
 <div id="container">

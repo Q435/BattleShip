@@ -3,8 +3,8 @@
     function getPDO() {
         $host = '127.0.0.1:3306';
         $db   = 'seabattle_db';
-        $user = 'root';
-        $pass = 'root';
+        $user = 'seabattle_db';
+        $pass = 'seabattle_db';
         $charset = 'utf8';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

@@ -7,7 +7,7 @@
 ?>
 
     <h1>Welcome to Battleship TIEI-2020</h1>
-    <button class="button online">Online game</button>
+    <button class="button online" onclick="window.location.href='room.php'">Online game</button>
     <br>
     <button class="button ai">AI game</button>
 

@@ -30,7 +30,7 @@
         if (isset( $_SESSION["user_id"])) {
     ?>
 
-        Welcome <?= $_SESSION["nickname"] ?> | <a href='logout.php' title='click to sign-out'>Log Out</a>
+        Welcome <?= $_SESSION["nick_name"] ?> | <a href='logout.php' title='click to sign-out'>Log Out</a>
 
     <?php
         } else {

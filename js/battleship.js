@@ -9,8 +9,8 @@ window.onload = function () {
     var OPPONENT_GRIDS = new Array(10);
 
     function place(row, col, len, dir) {
-        ajaxRequest("server.php", "post",
-            { type: 'game', event: 'place', row: row, col: col, len: len, dir: dir },
+        ajaxRequest("place.php", "post",
+            { row: row, col: col, len: len, dir: dir },
             function () {
                 let result = JSON.parse(this.responseText);
                 let col_id = result.col;
@@ -71,7 +71,38 @@ window.onload = function () {
         let cell_id = this.getAttribute("id");
         let col_id = cell_id % 10;
         let row_id = parseInt(cell_id / 10);
-        ajaxRequest("server.php", "post", { type: 'game', event: 'fire', row: row_id, col: col_id } , null, null);
+        ajaxRequest("fire.php", "post", { row: row_id, col: col_id, id: cell_id } ,
+            function () {
+                let result = JSON.parse(this.responseText);
+                let status = result.result;
+                let col_id = result.col;
+                let row_id = result.row;
+                let len = result.len;
+                let opponent_board = document.querySelector("#opponent_board");
+                let cell = opponent_board.querySelector("#\\" + (row_id + 30) + " \\"+ (col_id + 30) + " ");
+                if (status === 1) {
+                    cell.classList.add("miss");
+                } else if (status === 2) {
+                    cell.classList.add("hit");
+                } else if (status === 3) {
+                    let dir = result.dir;
+                    if (dir === 1) {
+                        for (let i = col_id; i < col_id + len; i++) {
+                            let cell = opponent_board.querySelector("#\\" + (row_id + 30) + " \\"+ (i + 30) + " ");
+                            cell.classList.remove("hit");
+                            cell.classList.add("dead");
+                        }
+                    } else {
+                        for (let i = row_id; i < row_id + len; i++) {
+                            let cell = opponent_board.querySelector("#\\" + (i + 30) + " \\"+ (col_id + 30) + " ");
+                            cell.classList.remove("hit");
+                            cell.classList.add("dead");
+                        }
+                    }
+                }
+            }, function () {
+
+            });
     }
 
     function selectShip() {

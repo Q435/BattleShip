@@ -31,7 +31,7 @@
 
     if ($user) {
         $_SESSION["user_id"] = getUserId($user);
-        $_SESSION["nickname"] = getNickName($user);
+        $_SESSION["nick_name"] = getNickName($user);
         header("Location:index.php");
         die();
     }

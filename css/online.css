@@ -254,14 +254,17 @@ html, body {
 
 .grid .row>.cell.hit {
     background-image: url("../img/fire.svg");
+    background-size: contain;
 }
 
 .grid .row>.cell.miss {
     background-image: url("../img/cross.svg");
+    background-size: contain;
 }
 
 .grid .row>.cell.dead {
     background-image: url("../img/skull.svg");
+    background-size: contain;
 }
 
 #opponent_board .cell:not(.table_header) {
