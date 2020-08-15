@@ -98,6 +98,22 @@ function errorMsg($error_code) {
     return $msg;
 }
 
+function changePlayer() {
+    global $GAME_TABLE;
+
+    $user_id = $_SESSION['user_id'];
+    $sql = "SELECT Id, current_player FROM $GAME_TABLE WHERE player1_id = $user_id OR player2_id = $user_id";
+    $result = sqlExecute($sql);
+    if ($result) {
+        if ($result['current_player'] === "player1") {
+            $sql = "UPDATE $GAME_TABLE SET current_player = 'player2' WHERE Id = {$result['Id']}";
+        } else {
+            $sql = "UPDATE $GAME_TABLE SET current_player = 'player1' WHERE Id = {$result['Id']}";
+        }
+        sqlExecute($sql);
+    }
+}
+
 function sqlExecute($sql) {
     global $PDO;
 
@@ -123,4 +139,39 @@ function sqlFindAllFreeGame($user_id) {
     }
 
     return $result;
+}
+
+function sqlUpdateBoard($board, $id) {
+    global $PDO, $BOARD_TABLE;
+
+    $board = json_encode($board);
+    $sql = "UPDATE $BOARD_TABLE SET board = '$board' WHERE Id = $id";
+
+    try {
+        $PDO->query($sql);
+    } catch (PDOException $e) {
+        echo $e->getMessage() . "   " . $sql;
+        die();
+    }
+
+}
+
+function sqlLogout($userId) {
+    global $BOARD_TABLE, $GAME_TABLE;
+
+    $sql = "DELETE FROM $BOARD_TABLE WHERE user_id = $userId";
+    sqlExecute($sql);
+    $sql = "DELETE FROM $GAME_TABLE WHERE player1_id = $userId OR player2_id = $userId";
+    sqlExecute($sql);
+}
+
+function sqlUpdateHit($userId) {
+    global $BOARD_TABLE;
+
+    $sql = "SELECT Id, hit_num FROM $BOARD_TABLE WHERE user_id = $userId";
+    $result = sqlExecute($sql);
+    $hitNum = $result['hit_num'];
+    $hitNum++;
+    $sql = "UPDATE $BOARD_TABLE SET hit_num = $hitNum WHERE Id = {$result['Id']}";
+    sqlExecute($sql);
 }

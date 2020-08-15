@@ -38,6 +38,9 @@
 
     register($username, $nickname, $password);
 
+    $js_files = array("simpleajax");
+    $css_files = array("common");
+
     include("include/opening.inc.php")
 ?>
 

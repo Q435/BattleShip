@@ -3,7 +3,19 @@ window.onload = function () {
     var timeHandler;
 
     function joinRoom() {
-
+        let gameId = this.getAttribute("data-id");
+        ajaxRequest("server.php", "post", { type: "game", event: "join", id : gameId },
+            function () {
+                let res = JSON.parse(this.responseText);
+                if (res.code === 200) {
+                    window.clearTimeout(timeHandler);
+                    window.location.href = "online.php";
+                } else {
+                    alert("Join game error!");
+                }
+            }, function () {
+                console.log("joinRoom error");
+            });
     }
 
     function showGameList() {
@@ -22,7 +34,7 @@ window.onload = function () {
             a_el.classList.add("button");
             a_el.classList.add("small");
             a_el.setAttribute("data-id", result[i].Id);
-            a_el.onclick = joinRoom();
+            a_el.onclick = joinRoom;
             a_el.innerText = "JOIN";
             li_el.innerText = result[i].player1_name + "'s room";
             li_el.appendChild(a_el);

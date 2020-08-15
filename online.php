@@ -9,6 +9,7 @@
 
     if (!isset($_SESSION['game_id'])) {
         checkGame();
+        echo "no game_id";
     }
 
 ?>

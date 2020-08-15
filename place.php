@@ -50,14 +50,10 @@
             }
         }
         $board = json_encode($board);
-        $sql = "INSERT INTO $BOARD_TABLE (game_id, user_id, ship$len, board) VALUES ($game_id, $user_id, '$json', '$board')";
+        $sql = "INSERT INTO $BOARD_TABLE (game_id, user_id, ship$len, board, hit_num) VALUES ($game_id, $user_id, '$json', '$board', 0)";
     }
-    try {
-        $PDO->query($sql);
-    } catch (PDOException $e) {
-        echo $e->getMessage() . "   " . $sql;
-    }
-    $result = array( 'col' => $col, 'row' => $row, 'len' => $len, 'dir' => $dir);
+    sqlExecute($sql);
+    $result = array( 'col' => $col, 'row' => $row, 'len' => $len, 'dir' => $dir, 'game_id' => $game_id);
     echo json_encode($result);
 
 ?>

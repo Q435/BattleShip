@@ -16,15 +16,18 @@
     $result['row'] = $row;
     $result['len'] = 0;
 
-    $sql = "SELECT * FROM $BOARD_TABLE WHERE user_id = $user_id";
+    $opponentId = $_SESSION['opponent_id'];
+    $sql = "SELECT * FROM $BOARD_TABLE WHERE user_id = $opponentId";
     $select_result = sqlExecute($sql);
 
+    $board_id = $select_result['Id'];
     $board = $select_result['board'];
     $board = json_decode($board, true);
     $board_statue = $board['row' . $row]['col' . $col];
 
     if ($board_statue === 0) {
         $result['result'] = 1;
+        $board['row' . $row]['col' . $col] = 8;
     } elseif ($board_statue >= 1 && $board_statue <= 5) {
         $ship = $select_result['ship'.$board_statue];
         $ship = json_decode($ship, true);
@@ -34,13 +37,14 @@
         $result['col'] = $col;
         $result['len'] = 0;
         $result['row'] = $row;
+        $board['row' . $row]['col' . $col] = 6;
 
         if ($ship_dir === 1) {
             $col_id = $ship['col'];
             $ship_hit[$col_id - $col] = "1";
             $ship['hit'] = $ship_hit;
             $ship_json = json_encode($ship);
-            $sql = "UPDATE $BOARD_TABLE SET ship$ship_len = '$ship_json'  WHERE user_id = 2";
+            $sql = "UPDATE $BOARD_TABLE SET ship$ship_len = '$ship_json'  WHERE user_id = $opponentId";
             sqlExecute($sql);
             if (stripos($ship_hit, "0") === false) {
                 $result['result'] = 3;
@@ -48,6 +52,10 @@
                 $result['len'] = $ship['len'];
                 $result['row'] = $ship['row'];
                 $result['dir'] = 1;
+                for($i = $ship['col']; $i < $ship['col'] + $ship['len']; $i++) {
+                    $board['row' . $ship['row']]['col' . $i] = 7;
+                }
+                sqlUpdateHit($user_id);
             } else {
                 $result['result'] = 2;
             }
@@ -56,7 +64,7 @@
             $ship_hit[$row_id - $row] = "1";
             $ship['hit'] = $ship_hit;
             $ship_json = json_encode($ship);
-            $sql = "UPDATE $BOARD_TABLE SET ship$ship_len = '$ship_json'  WHERE user_id = 2";
+            $sql = "UPDATE $BOARD_TABLE SET ship$ship_len = '$ship_json'  WHERE user_id = $opponentId";
             sqlExecute($sql);
             if (stripos($ship_hit, "0") === false) {
                 $result['result'] = 3;
@@ -64,10 +72,18 @@
                 $result['len'] = $ship['len'];
                 $result['row'] = $ship['row'];
                 $result['dir'] = 2;
+                for($i = $ship['row']; $i < $ship['row'] + $ship['len']; $i++) {
+                    $board['row' . $i]['col' . $ship['col']] = 7;
+                }
+                sqlUpdateHit($user_id);
             } else {
                 $result['result'] = 2;
             }
         }
     }
+
+    sqlUpdateBoard($board, $board_id);
+    changePlayer();
+
     echo json_encode($result);
 ?>

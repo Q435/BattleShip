@@ -7,6 +7,87 @@ window.onload = function () {
     var ship_place = 0;
     var MY_GRIDS = new Array(10);
     var OPPONENT_GRIDS = new Array(10);
+    var FIRE = 0;
+
+
+    function loadBattle() {
+        ajaxRequest("server.php", "post", { type: "game", event: "query", mode: "battle"},
+            function () {
+                let result = JSON.parse(this.responseText);
+                if (result.code === 200) {
+                    if (result.current_player === "you") {
+                        FIRE = 1;
+                        document.querySelector(".game_header > h1").innerText = "Your turn";
+                        document.querySelector(".game_header > p").innerText = "Fire on your opponent";
+                    } else if (result.current_player === "opponent") {
+                        FIRE = 0;
+                        document.querySelector(".game_header > h1").innerText = "Opponent turn";
+                        document.querySelector(".game_header > p").innerText = "Wait for your opponent to fire";
+                    }
+                    let board = JSON.parse(result.board);
+                    let my_board = document.querySelector("#my_board");
+                    for (let i = 0; i < 10; i++) {
+                        for (let j = 0; j < 10; j++) {
+                            let cell = my_board.querySelector("#\\" + (i + 30) + " \\"+ (j + 30) + " ");
+                            let cell_satus = board['row' + i]['col' + j];
+                            if (cell_satus === 8) {
+                                cell.classList.add("miss");
+                            } else if (cell_satus === 6) {
+                                cell.classList.add("hit");
+                            } else if (cell_satus === 7) {
+                                cell.classList.add("dead");
+                            }
+                        }
+                    }
+                } else if (result.code === 201) {
+                    if (result.win === "you") {
+                        document.querySelector(".game_header > h1").innerText = "You Win";
+                    } else {
+                        document.querySelector(".game_header > h1").innerText = "Opponent Win";
+                    }
+                }
+                window.setTimeout(loadBattle, 1000);
+            }, function () {
+                console.log("loadBattle error");
+                window.setTimeout(loadBattle, 1000);
+            });
+    }
+
+    function loadOpponent() {
+        ajaxRequest("server.php", "post", { type: "game", event: "query", mode: "opponent"},
+            function () {
+                let result = JSON.parse(this.responseText);
+                if (result.code === 201) {
+                    window.setTimeout(loadOpponent, 1000);
+                } else if (result.code === 202) {
+                    document.querySelector(".game_header > h1").innerText = "Waiting for opponent";
+                    document.querySelector(".game_header > p").innerText = "Battle will start as soon as your opponent is ready";
+                    window.setTimeout(loadOpponent, 1000);
+                } else if (result.code === 203) {
+                    let opponent_board = document.querySelector("#opponent_board");
+                    opponent_board.style.visibility = "visible";
+                    for (let i = 0; i < 10; i++) {
+                        for (let j = 0; j < 10; j++) {
+                            let grid = opponent_board.querySelector("#\\" + (i + 30) + " \\"+ (j + 30) + " ");
+                            grid.onclick = fire;
+                        }
+                    }
+                    if (result.current_player === "you") {
+                        FIRE = 1;
+                        document.querySelector(".game_header > h1").innerText = "Your turn";
+                        document.querySelector(".game_header > p").innerText = "Fire on your opponent";
+                    } else if (result.current_player === "opponent") {
+                        FIRE = 0;
+                        document.querySelector(".game_header > h1").innerText = "Opponent turn";
+                        document.querySelector(".game_header > p").innerText = "Wait for your opponent to fire";
+                    }
+                    window.setTimeout(loadBattle, 1000);
+                }
+            }, function () {
+                console.log("loadOpponent error");
+                window.setTimeout(loadOpponent, 1000);
+            });
+    }
 
     function place(row, col, len, dir) {
         ajaxRequest("place.php", "post",
@@ -50,8 +131,11 @@ window.onload = function () {
                     game_state = 1; // Complete ship placement
                     let ship_selector = document.getElementById("ship_selector");
                     ship_selector.parentNode.removeChild(ship_selector);
-                    document.querySelector(".game_header > h1").innerText = "Waiting for opponent";
-                    document.querySelector(".game_header > p").innerText = "Battle will start as soon as your opponent is ready";
+                    document.querySelector(".game_header > h1").innerText = "Looking for opponent";
+                    document.querySelector(".game_header > p").innerText = "Wait for the opponent to join the battle";
+                    ajaxRequest("server.php", "post", { type: "game", event: "update", statue: "ready"}, null, null);
+                    window.setTimeout(loadOpponent, 1000);
+                    /*
                     let opponent_board = document.querySelector("#opponent_board");
                     opponent_board.style.visibility = "visible";
                     for (let i = 0; i < 10; i++) {
@@ -60,6 +144,7 @@ window.onload = function () {
                             grid.onclick = fire;
                         }
                     }
+                    */
                 }
             },
             function () {
@@ -68,41 +153,44 @@ window.onload = function () {
     }
 
     function fire() {
-        let cell_id = this.getAttribute("id");
-        let col_id = cell_id % 10;
-        let row_id = parseInt(cell_id / 10);
-        ajaxRequest("fire.php", "post", { row: row_id, col: col_id, id: cell_id } ,
-            function () {
-                let result = JSON.parse(this.responseText);
-                let status = result.result;
-                let col_id = result.col;
-                let row_id = result.row;
-                let len = result.len;
-                let opponent_board = document.querySelector("#opponent_board");
-                let cell = opponent_board.querySelector("#\\" + (row_id + 30) + " \\"+ (col_id + 30) + " ");
-                if (status === 1) {
-                    cell.classList.add("miss");
-                } else if (status === 2) {
-                    cell.classList.add("hit");
-                } else if (status === 3) {
-                    let dir = result.dir;
-                    if (dir === 1) {
-                        for (let i = col_id; i < col_id + len; i++) {
-                            let cell = opponent_board.querySelector("#\\" + (row_id + 30) + " \\"+ (i + 30) + " ");
-                            cell.classList.remove("hit");
-                            cell.classList.add("dead");
-                        }
-                    } else {
-                        for (let i = row_id; i < row_id + len; i++) {
-                            let cell = opponent_board.querySelector("#\\" + (i + 30) + " \\"+ (col_id + 30) + " ");
-                            cell.classList.remove("hit");
-                            cell.classList.add("dead");
+        if (FIRE === 1) {
+            let cell_id = this.getAttribute("id");
+            let col_id = cell_id % 10;
+            let row_id = parseInt(cell_id / 10);
+            ajaxRequest("fire.php", "post", {row: row_id, col: col_id, id: cell_id},
+                function () {
+                    let result = JSON.parse(this.responseText);
+                    let status = result.result;
+                    let col_id = result.col;
+                    let row_id = result.row;
+                    let len = result.len;
+                    let opponent_board = document.querySelector("#opponent_board");
+                    let cell = opponent_board.querySelector("#\\" + (row_id + 30) + " \\" + (col_id + 30) + " ");
+                    cell.onclick = null;
+                    if (status === 1) {
+                        cell.classList.add("miss");
+                    } else if (status === 2) {
+                        cell.classList.add("hit");
+                    } else if (status === 3) {
+                        let dir = result.dir;
+                        if (dir === 1) {
+                            for (let i = col_id; i < col_id + len; i++) {
+                                let cell = opponent_board.querySelector("#\\" + (row_id + 30) + " \\" + (i + 30) + " ");
+                                cell.classList.remove("hit");
+                                cell.classList.add("dead");
+                            }
+                        } else {
+                            for (let i = row_id; i < row_id + len; i++) {
+                                let cell = opponent_board.querySelector("#\\" + (i + 30) + " \\" + (col_id + 30) + " ");
+                                cell.classList.remove("hit");
+                                cell.classList.add("dead");
+                            }
                         }
                     }
-                }
-            }, function () {
+                }, function () {
 
-            });
+                });
+        }
     }
 
     function selectShip() {
