@@ -6,18 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <?php
-    foreach ($css_files as $file) {
-        ?>
-        <link rel="stylesheet" type="text/css" href="css/<?= $file ?>.css">
-        <?php
-    }
+        if (isset($css_files)) {
+            foreach ($css_files as $file) {
+                echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/$file.css\">";
+            }
+        }
     ?>
 
     <?php
-        foreach ($js_files as $file) {
-    ?>
-        <script src="js/<?= $file ?>.js"></script>
-    <?php
+        if (isset($js_files)) {
+            foreach ($js_files as $file) {
+                echo "<script src=\"js/$file.js\"></script>";
+            }
         }
     ?>
 
@@ -29,15 +29,12 @@
     <?php
         if (isset( $_SESSION["user_id"])) {
     ?>
-
         Welcome <?= $_SESSION["nick_name"] ?> | <a href='logout.php' title='click to sign-out'>Log Out</a>
-
     <?php
         } else {
     ?>
         <a href='register_form.php' title='click to register a account'>Register</a> |
         <a href='login_form.php' title='click to login'>Log In</a>
-
     <?php
         }
     ?>

@@ -11,7 +11,7 @@ window.onload = function () {
                     window.clearTimeout(timeHandler);
                     window.location.href = "online.php";
                 } else {
-                    alert("Join game error!");
+                    alert("Join game error, please try again!");
                 }
             }, function () {
                 console.log("joinRoom error");
@@ -22,10 +22,11 @@ window.onload = function () {
         let result = JSON.parse(this.responseText);
         let list = document.getElementById("current-games-list");
         list.innerHTML = "";
-        if (result.length != 0) {
-            document.getElementsByClassName("current-games-container")[0].style.display = "block";
-        } else {
-            document.getElementsByClassName("current-games-container")[0].style.display = "none";
+
+        if (result.length === 0) {
+            let li_el = document.createElement("li");
+            li_el.innerText = "No Game Room";
+            list.appendChild(li_el);
         }
 
         for (let i = 0; i < result.length; i++) {
@@ -60,7 +61,7 @@ window.onload = function () {
                     window.clearTimeout(timeHandler);
                     window.location.href = "online.php";
                 } else {
-                    alert("Start new game error!");
+                    alert("Start new game error, please try again!");
                 }
             }, function () {
 
@@ -69,6 +70,6 @@ window.onload = function () {
 
     let btn_new = document.getElementById("btn_new");
     btn_new.onclick = newGame;
-    getGameList();
+    //getGameList();
     timeHandler = window.setTimeout(getGameList, 2000);
 }

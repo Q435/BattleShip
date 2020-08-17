@@ -5,8 +5,8 @@
     include("include/util.inc.php");
     include("include/opening.inc.php");
 
-    if (isset($_GET["error_code"])) {
-        $msg = errorMsg($_GET["error_code"]);
+    if (isset($_GET["code"])) {
+        $msg = getMsg($_GET["code"]);
     }
 
 ?>
@@ -16,7 +16,7 @@
 
     <?php
     if ((isset($msg))) {
-        echo "<p class='error_msg'>$msg</p>";
+        echo "<p class='login_msg'>$msg</p>";
     }
     ?>
 

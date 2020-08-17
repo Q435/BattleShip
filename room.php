@@ -5,7 +5,11 @@
     include("include/util.inc.php");
 
     checkLogin();
-    checkGame();
+
+    if (checkGame($_SESSION['user_id'])) {
+        header("Location:online.php");
+        die();
+    }
 
     include("include/opening.inc.php");
 ?>
@@ -16,7 +20,9 @@
         <hr>
         <h3>Current Games</h3>
         <ul class="current-games">
-        <span id="current-games-list"></span>
+        <span id="current-games-list">
+            <li>Loading...</li>
+        </span>
         </ul>
     </div>
 

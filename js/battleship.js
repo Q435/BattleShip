@@ -40,6 +40,8 @@ window.onload = function () {
                         }
                     }
                 } else if (result.code === 201) {
+                    FIRE = 0;
+                    document.querySelector(".game_header > p").innerText = "";
                     if (result.win === "you") {
                         document.querySelector(".game_header > h1").innerText = "You Win";
                     } else {
@@ -58,6 +60,8 @@ window.onload = function () {
             function () {
                 let result = JSON.parse(this.responseText);
                 if (result.code === 201) {
+                    document.querySelector(".game_header > h1").innerText = "Looking for opponent";
+                    document.querySelector(".game_header > p").innerText = "Wait for the opponent to join the battle";
                     window.setTimeout(loadOpponent, 1000);
                 } else if (result.code === 202) {
                     document.querySelector(".game_header > h1").innerText = "Waiting for opponent";
@@ -94,57 +98,61 @@ window.onload = function () {
             { row: row, col: col, len: len, dir: dir },
             function () {
                 let result = JSON.parse(this.responseText);
-                let col_id = result.col;
-                let row_id = result.row;
-                let dir = result.dir;
-                let len = result.len;
-                for (let i = 0; i < 10; i++) {
-                    MY_GRIDS[i] = new Array(10);
-                    OPPONENT_GRIDS[i] = new Array(10);
-                    for (let j = 0; j < 10; j++) {
-                        let grid = document.getElementById("" + i + j);
-                        grid.classList.remove("ship-prepare");
-                        grid.classList.remove("ship-invalid");
-                    }
-                }
-
-                if (dir == 1) {
-                    for (let i = col_id; i < col_id + len; i++) {
-                        let cell = document.getElementById("" + row_id + i);
-                        cell.classList.remove("ship-prepare");
-                        cell.classList.add("ship");
-                        MY_GRIDS[row_id][i] = 1;
-                    }
-                } else {
-                    for (let i = row_id; i < row_id + len; i++) {
-                        let cell = document.getElementById("" + i + col_id);
-                        cell.classList.remove("ship-prepare");
-                        cell.classList.add("ship");
-                        MY_GRIDS[i][col_id] = 1;
-                    }
-                }
-                let li = ships[len - 1].parentNode;
-                let ul = li.parentNode;
-                ul.removeChild(li);
-                ship_length = 0;
-                if (ul.childElementCount === 0) {
-                    game_state = 1; // Complete ship placement
-                    let ship_selector = document.getElementById("ship_selector");
-                    ship_selector.parentNode.removeChild(ship_selector);
-                    document.querySelector(".game_header > h1").innerText = "Looking for opponent";
-                    document.querySelector(".game_header > p").innerText = "Wait for the opponent to join the battle";
-                    ajaxRequest("server.php", "post", { type: "game", event: "update", statue: "ready"}, null, null);
-                    window.setTimeout(loadOpponent, 1000);
-                    /*
-                    let opponent_board = document.querySelector("#opponent_board");
-                    opponent_board.style.visibility = "visible";
+                if (result.code === 200) {
+                    let col_id = result.col;
+                    let row_id = result.row;
+                    let dir = result.dir;
+                    let len = result.len;
                     for (let i = 0; i < 10; i++) {
+                        MY_GRIDS[i] = new Array(10);
+                        OPPONENT_GRIDS[i] = new Array(10);
                         for (let j = 0; j < 10; j++) {
-                            let grid = opponent_board.querySelector("#\\" + (i + 30) + " \\"+ (j + 30) + " ");
-                            grid.onclick = fire;
+                            let grid = document.getElementById("" + i + j);
+                            grid.classList.remove("ship-prepare");
+                            grid.classList.remove("ship-invalid");
                         }
                     }
-                    */
+
+                    if (dir == 1) {
+                        for (let i = col_id; i < col_id + len; i++) {
+                            let cell = document.getElementById("" + row_id + i);
+                            cell.classList.remove("ship-prepare");
+                            cell.classList.add("ship");
+                            MY_GRIDS[row_id][i] = 1;
+                        }
+                    } else {
+                        for (let i = row_id; i < row_id + len; i++) {
+                            let cell = document.getElementById("" + i + col_id);
+                            cell.classList.remove("ship-prepare");
+                            cell.classList.add("ship");
+                            MY_GRIDS[i][col_id] = 1;
+                        }
+                    }
+                    let li = ships[len - 1].parentNode;
+                    let ul = li.parentNode;
+                    ul.removeChild(li);
+                    ship_length = 0;
+                    if (ul.childElementCount === 0) {
+                        game_state = 1; // Complete ship placement
+                        let ship_selector = document.getElementById("ship_selector");
+                        ship_selector.parentNode.removeChild(ship_selector);
+                        document.querySelector(".game_header > h1").innerText = "Looking for opponent";
+                        document.querySelector(".game_header > p").innerText = "Wait for the opponent to join the battle";
+                        ajaxRequest("server.php", "post", {type: "game", event: "update", statue: "ready"}, null, null);
+                        window.setTimeout(loadOpponent, 1000);
+                        /*
+                        let opponent_board = document.querySelector("#opponent_board");
+                        opponent_board.style.visibility = "visible";
+                        for (let i = 0; i < 10; i++) {
+                            for (let j = 0; j < 10; j++) {
+                                let grid = opponent_board.querySelector("#\\" + (i + 30) + " \\"+ (j + 30) + " ");
+                                grid.onclick = fire;
+                            }
+                        }
+                        */
+                    }
+                } else {
+                    alert("Place ship error, please try again!");
                 }
             },
             function () {

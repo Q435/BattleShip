@@ -4,8 +4,8 @@
     $css_files = array("common");
     include("include/util.inc.php");
 
-    if (isset($_GET["error_code"])) {
-        $msg = errorMsg($_GET["error_code"]);
+    if (isset($_GET["code"])) {
+        $msg = getMsg($_GET["code"]);
     }
 
     include("include/opening.inc.php");
@@ -17,7 +17,7 @@
 
     <?php
         if ((isset($msg))) {
-            echo "<p class='error_msg'>$msg</p>";
+            echo "<p class='register_msg'>$msg</p>";
         }
     ?>
 

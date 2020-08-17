@@ -4,14 +4,10 @@
 
     include("include/util.inc.php");
 
-    if (isset($_SESSION['game_id'])) {
-        unset($_SESSION['game_id']);
-    }
-    //echo $_SESSION['game_id'];
 
-    $result = $PDO->query("SELECT * FROM $GAME_TABLE WHERE player1_id = {$_SESSION['user_id']} OR player2_id = {$_SESSION['user_id']}")->fetch();
-    if ($result) {
-        $_SESSION['game_id'] = $result['Id'];
+    $res = "false";
+    if (sqlINSERT($USER_TABLE, array("username" => "123", "nickname" => "nick"))) {
+        $res = "true";
     }
 
 ?>
@@ -24,8 +20,7 @@
 </head>
 <body>
 
-<h1><?=  $_SESSION['game_id'] ?></h1>
-<p><?= $result ?></p>
+<h1><?php print_r($res) ?></h1>
 </body>
 </html>
 

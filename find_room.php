@@ -4,12 +4,10 @@
     include("include/util.inc.php");
 
     checkLogin();
-    checkGame();
+    $userId = $_SESSION['user_id'];
 
-    $user_id = $_SESSION['user_id'];
-    //$game_id = 1;
-
-    $all_free_game = sqlFindAllFreeGame($user_id);
+    checkGame($userId);
+    $all_free_game = findAllFreeGame();
 
     echo json_encode($all_free_game);
 

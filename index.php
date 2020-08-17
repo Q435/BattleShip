@@ -1,6 +1,5 @@
 <?php
     session_start();
-    $js_files = array("simpleajax");
     $css_files = array("common");
     include("include/util.inc.php");
     include("include/opening.inc.php");
@@ -13,7 +12,7 @@
 
 <?php
     if (isset($_SESSION["user_id"])) {
-        echo "<br><button class='button record'>My record</button>";
+        echo "<br><button class=\"button record\" onclick=\"window.location.href='record.php'\">My record</button>";
     }
 ?>
 

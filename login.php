@@ -8,34 +8,34 @@
         die();
     }
 
-    $username = $_POST["username"];
-    $password = $_POST["password"];
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
 
     if (empty($username)) {
-        header("Location:login_form.php?error_code=1");
+        header("Location:login_form.php?code=1");
         die();
     } elseif (!preg_match('/^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{5,30}$/', $username)) {
-        header("Location:login_form.php?error_code=2");
+        header("Location:login_form.php?code=2");
         die();
     } elseif (!checkUsername($username)) {
-        header("Location:login_form.php?error_code=9");
+        header("Location:login_form.php?code=9");
         die();
     }
 
     if (empty($password)) {
-        header("Location:login_form.php?error_code=7");
+        header("Location:login_form.php?code=7");
         die();
     }
 
     $user = checkPassword($username, $password);
 
     if ($user) {
-        $_SESSION["user_id"] = getUserId($user);
-        $_SESSION["nick_name"] = getNickName($user);
+        $_SESSION['user_id'] = $user['Id'];
+        $_SESSION['nick_name'] = $user['nickname'];
         header("Location:index.php");
         die();
     }
 
-    header("Location:login_form.php?error_code=9");
+    header("Location:login_form.php?code=9");
 ?>
 

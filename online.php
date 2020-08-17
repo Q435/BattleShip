@@ -3,13 +3,16 @@
     $js_files = array("simpleajax", "battleship");
     $css_files = array("online");
     include("include/util.inc.php");
-    include("include/opening.inc.php");
 
     checkLogin();
 
+    include("include/opening.inc.php");
+
     if (!isset($_SESSION['game_id'])) {
-        checkGame();
-        echo "no game_id";
+        if (!checkGame()) {
+            header("Location:room.php");
+            die();
+        }
     }
 
 ?>
